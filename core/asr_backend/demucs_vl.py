@@ -20,8 +20,8 @@ class PreloadedSeparator(Separator):
                             segment=segment, jobs=jobs, progress=True, callback=None, callback_arg=None)
 
 def demucs_audio():
-    if os.path.exists(_VOCAL_AUDIO_FILE) and os.path.exists(_BACKGROUND_AUDIO_FILE):
-        rprint(f"[yellow]⚠️ {_VOCAL_AUDIO_FILE} and {_BACKGROUND_AUDIO_FILE} already exist, skip Demucs processing.[/yellow]")
+    if os.path.exists(_VOCAL_AUDIO_FILE):
+        rprint(f"[yellow]⚠️ {_VOCAL_AUDIO_FILE} already exists, skip Demucs processing.[/yellow]")
         return
     
     console = Console()
@@ -39,16 +39,12 @@ def demucs_audio():
     
     console.print("🎤 Saving vocals track...")
     save_audio(outputs['vocals'].cpu(), _VOCAL_AUDIO_FILE, **kwargs)
-    
-    console.print("🎹 Saving background music...")
-    background = sum(audio for source, audio in outputs.items() if source != 'vocals')
-    save_audio(background.cpu(), _BACKGROUND_AUDIO_FILE, **kwargs)
-    
+
     # Clean up memory
-    del outputs, background, model, separator
+    del outputs, model, separator
     gc.collect()
-    
-    console.print("[green]✨ Audio separation completed![/green]")
+
+    console.print("[green]✨ Vocal separation completed![/green]")
 
 if __name__ == "__main__":
     demucs_audio()
